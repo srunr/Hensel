@@ -21,13 +21,13 @@ procedure padic is
 
    i : Integer := 0;
    -- 190709 Introduce new input parameters for command (-e,-e+,-e-,-e*,-e/,-d,-d+,-d-,-d*,-d/ ,-h, -help) e for encode and d for decode together with operation o = (+,-,*,/).
-   a : MaxInteger := (if (command = "-e" or command = "-e+" or command = "-e-" or command = "-r" or command = "-r+" or command = "-r-" )
+   a : MaxInteger := (if (command = "-e" or command = "-e+" or command = "-e-" or command = "-e*" or command = "-r" or command = "-r+" or command = "-r-" )
                       and argv'Length >= 2 then MaxInteger'Value(To_String(argv(2))) else 0);  -- use program with main  -o a b p
-   b : MaxInteger := (if (command = "-e" or command = "-e+" or command = "-e-" or command = "-r" or command = "-r+" or command = "-r-" )
+   b : MaxInteger := (if (command = "-e" or command = "-e+" or command = "-e-" or command = "-e*" or command = "-r" or command = "-r+" or command = "-r-" )
                       and argv'Length >= 3 then MaxInteger'Value(To_String(argv(3))) else 1);
-   p : MaxInteger := (if (command = "-e" or command = "-e+" or command = "-e-" or command = "-r" or command = "-r+" or command = "-r-" )
+   p : MaxInteger := (if (command = "-e" or command = "-e+" or command = "-e-" or command = "-e*" or command = "-r" or command = "-r+" or command = "-r-" )
                       and argv'Length >= 4 then MaxInteger'Value(To_String(argv(4))) else 1);  -- Check 190404 find ways to select prime !!!
-   logg : Boolean := (if (command = "-e" or command = "-e+" or command = "-e-" or command = "-r" or command = "-r+" or command = "-r-" )
+   logg : Boolean := (if (command = "-e" or command = "-e+" or command = "-e-" or command = "-e*" or command = "-r" or command = "-r+" or command = "-r-" )
                       and argv'Length >= 5 then (To_String(argv(5)) = "-logg") else False);
    TestRun : Boolean := (if (command = "-e" or command = "-e+" or command = "-e-" or command = "-r" or command = "-r+" or command = "-r-" )
                          and argv'Length >= 6 then (To_String(argv(6)) = "-t") else False);
@@ -246,7 +246,39 @@ begin -- padic
          end loop;
       end if;
    elsif command = "-e*" then
-      Put_Line("-- Padic.adb -e* : ");
+      if TestRun or imax = 1 then
+         Put_line("-- Padic.adb -e* : First a/b = "&Image((a,b))&" Testruns = "&imax'Image,True);
+         loop
+            Put_Line("-- Padic.adb -e* : Mult : "&Image((a,b))&" * "&Image((3+a,2*b))&" = "&Image((a,b)*(3+a,2*b))
+                               &" Estimated recoverylength = "&Integer(Float(2)*Log(Float(MAX(Numerator((a,b)*(3+a,2*b)),Denominator((a,b)*(3+a,2*b))))/Float(0.618))/Log(Float(p)))'Image,True);
+            ratio1 := Decode4(mult(EncodeHensel(a,b,p),EncodeHensel(3+a,2*b,p),logg),logg);
+            Put(" = "&Image(ratio1),True);
+            if ratio1 = (a,b)*(3+a,2*b) then Put(" Success"); else Put(" Failure"); end if; New_Line;
+
+            Put_Line("-- Padic.adb -e* : Mult : "&Image((1+a,6+b))&" * "&Image((1+a,2+b))&" = "&Image((1+a,6+b)*(1+a,2+b))
+                               &" Estimated recoverylength = "&Integer(Float(2)*Log(Float(MAX(Numerator((1+a,6+b)*(1+a,2+b)),Denominator((1+a,6+b)*(1+a,2+b))))/Float(0.618))/Log(Float(p)))'Image,True);
+            ratio2 := Decode4(mult(EncodeHensel(1+a,6+b,p),EncodeHensel(1+a,2+b,p),logg),logg);
+            Put(" = "&Image(ratio2),True);
+            if ratio2 = (1+a,6+b)*(1+a,2+b) then Put(" Success"); else Put(" Failure"); end if; New_line;
+
+            Put_Line("-- Padic.adb -e* : Mult : "&Image((3+a,2*b))&" * "&Image((a,b))&" = "&Image((a,b)*(3+a,2*b))
+                               &" Estimated recoverylength = "&Integer(Float(2)*Log(Float(MAX(Numerator((a,b)+(3+a,2*b)),Denominator((a,b)+(3+a,2*b))))/Float(0.618))/Log(Float(p)))'Image,True);
+            ratio3 := Decode4(mult(EncodeHensel(3+a,2*b,p),EncodeHensel(a,b,p),logg),logg);
+            Put(" = "&Image(ratio3),True);
+            if ratio3 = (3+a,2*b)*(a,b) then Put(" Success"); else Put(" Failure"); end if; New_Line;
+
+            a := a+1; b := b+1; i := i + 1;
+            if (a = 0) then a := a+1; -- 190611 Removing silly tests !
+            elsif (1+a = 0) then a := a+1;
+            elsif (3+a = 0) then a := a+1;
+            elsif (6+b = 0) then b := b+1;
+            elsif (2+b = 0) then b := b+1;
+            end if;
+            if a = 0 then a := a+1; end if;
+            Put_line("-- Padic.adb -e+ : Next a/b = "&Image((a,b)),True);
+            exit when i > imax;
+         end loop;
+      end if;
    elsif command = "-e/" then
       Put_Line("-- Padic.adb -e/ : ");
    elsif command = "-r" then

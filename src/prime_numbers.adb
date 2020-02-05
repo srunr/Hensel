@@ -29,8 +29,8 @@ package body Prime_Numbers is
    procedure PutList (List : Number_List; logg : Boolean) is
    begin
       if logg then
-      for Index in List'Range loop
-         Ada.Text_IO.Put(Image(List(Index)));
+         for Index in List'Range loop
+            Ada.Text_IO.Put(Image(List(Index)));
          end loop;
       end if;
    end PutList;

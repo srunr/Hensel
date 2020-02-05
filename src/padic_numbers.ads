@@ -38,6 +38,10 @@ package padic_numbers is
    --                         p(3) <= p(1) - p(2) + n(3) + 1 if n(2) < p(2) <= p(1)
    --                         n(3) is a divisor of LCM(n(1),phi(x(2)) * (b**n(2) - 1))
    --  Fact: Effective calculation of phi(x) requires prime factors of x.
+   --
+   --  200209 multiplication : p(1) = A.FirstPerPos - 1, p(2) = B.FirstPerPos - 1, n(1) := A.LastPerPos - A.FirstPerPos + 1, n(2) = B.LastPerPos - B.FirstPerPos + 1
+   --  200209 multiplication : n(3) = Decompose(LCM(n(1),n(2)), To get maxumim length use largest divisor use Max(n(3)) = MaxDivisor(Decompose(LCM(n(1),n(2))))
+   --  200209 multiplication : p(3) <= R.FirstPerPos <= MAX(A.FirstPerPos, B.FirstPerPos) + MaxDivisor(Decompose(LCM(A.LastPerPos - A.FirstPerPos + 1,B.LastPerPos - B.FirstPerPos + 1))) + 1
 
    function floor(A : in Float) return Integer;
 
